@@ -44,5 +44,6 @@ final devServer =
 const dankookEmail = "@dankook.ac.kr";
 
 const appId = "1db42f592687465e9ad1564ae4b55221";
+const channelId = "0511zamong";
 var token =
-    "0061db42f592687465e9ad1564ae4b55221IAAgLYU6hd31ueZLHDAYTtKXBPmAoCySl+IrUk4FaqHxLei/5GcAAAAAEAAg4mLWC7RDYgEAAQALtENi";
+    "0061db42f592687465e9ad1564ae4b55221IADrBc3Y2gVRycBcytvaTJDcoVDwF5fITr/MEp1QpZxpUZ3zKAQAAAAAEAD9FOMnk+Z7YgEAAQCT5nti";

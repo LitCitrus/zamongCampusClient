@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:zamongcampus/src/business_logic/init/auth_service.dart';
 import 'package:zamongcampus/src/business_logic/utils/constants.dart';
 import 'package:zamongcampus/src/object/firebase_object.dart';
@@ -18,35 +20,39 @@ class Init {
     await FirebaseObject.init();
     String? loginId = await PrefsObject.getLoginId();
     String? token = await PrefsObject.getToken();
-    if (loginId == null || token == null) {
-      return "/login";
-    } else {
-      /// 여기 logic
-      // token의 validation 확인
-      // 이상 없으면 "/"
-      // 아니면 loginId, token 삭제 후 "login"으로.
-      try {
-        final response = await http.post(
-            Uri.parse(devServer + "/api/authenticate/checkTokenValidation"),
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": token,
-            });
-        if (response.statusCode == 200) {
-          AuthService.setGlobalLoginIdTokenAndInitUserData(
-              token: token, loginId: loginId);
-          return "/";
-        } else {
-          // 지우고, return 재로그인
-          PrefsObject.removeLoginIdAndToken();
-          return "/login";
-        }
-      } catch (e) {
-        // 서버 꺼진 상태
-        print("서버 꺼진 상태");
-        PrefsObject.removeLoginIdAndToken();
-        return "/login";
-      }
-    }
+    // if (loginId == null || token == null) {
+    //   return "/login";
+    // } else {
+    //   /// 여기 logic
+    //   // token의 validation 확인
+    //   // 이상 없으면 "/"
+    //   // 아니면 loginId, token 삭제 후 "login"으로.
+    //   try {
+    //     final response = await http.post(
+    //         Uri.parse(devServer + "/api/authenticate/checkTokenValidation"),
+    //         headers: {
+    //           "Content-Type": "application/json",
+    //           "Authorization": token,
+    //         });
+    //     if (response.statusCode == 200) {
+    //       AuthService.setGlobalLoginIdTokenAndInitUserData(
+    //           token: token, loginId: loginId);
+    //       return "/";
+    //     } else {
+    //       // 지우고, return 재로그인
+    //       PrefsObject.removeLoginIdAndToken();
+    //       return "/login";
+    //     }
+    //   } catch (error) {
+    //     print(error);
+    //     // 서버 꺼진 상태
+    //     print("서버 꺼진 상태");
+    //     PrefsObject.removeLoginIdAndToken();
+    //     return "/login";
+    //   }
+    // }
+    print("서버 꺼진 상태");
+    PrefsObject.removeLoginIdAndToken();
+    return "/login";
   }
 }
