@@ -24,6 +24,7 @@ class PostServiceImpl implements PostService {
       List<Post> posts = await jsonDecode(utf8.decode(response.bodyBytes))
           .map<Post>((json) => Post.fromJson(json))
           .toList();
+
       return posts;
     } else {
       // 만약 응답이 OK가 아니면, 에러를 던집니다.
@@ -38,9 +39,12 @@ class PostServiceImpl implements PostService {
         Uri.parse(devServer + "/api/post/" + postId.toString()),
         headers: AuthService.get_auth_header());
     if (response.statusCode == 200) {
-      return Post.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+      Post post =
+          Post.fromJson(await jsonDecode(utf8.decode(response.bodyBytes)));
+      return post;
+    } else {
+      throw Exception('게시물 패치 오류');
     }
-    throw UnimplementedError();
   }
 
   @override
@@ -60,21 +64,19 @@ class PostServiceImpl implements PostService {
 
     request.fields['body'] = body;
     request.fields['title'] = title;
-
     if (imageFileList != null) {
       for (var imageFile in imageFileList) {
         request.files
             .add(await http.MultipartFile.fromPath('files', imageFile.path));
       }
     }
+
     var response = await request.send();
-    print("hi");
     if (response.statusCode == 200) {
       print("post 생성 성공");
       return true;
     } else {
       return false;
-      throw Exception("게시물 생성 오류");
     }
   }
 }

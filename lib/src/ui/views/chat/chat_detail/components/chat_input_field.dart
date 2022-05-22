@@ -5,8 +5,10 @@ import 'package:zamongcampus/src/config/size_config.dart';
 import 'package:zamongcampus/src/object/stomp_object.dart';
 
 class ChatInputField extends StatefulWidget {
-  final ChatDetailViewModel vm;
-  const ChatInputField({Key? key, required this.vm}) : super(key: key);
+  final String roomId;
+  final String roomType;
+  const ChatInputField({Key? key, required this.roomId, required this.roomType})
+      : super(key: key);
 
   @override
   _ChatInputFieldState createState() => _ChatInputFieldState();
@@ -24,9 +26,8 @@ class _ChatInputFieldState extends State<ChatInputField> {
   // 메세지 보내기
   void _sendMessage(String text) {
     if (text != "") {
-      print("메시지 전송 => 방번호: ${widget.vm.chatRoom.roomId}");
-      StompObject.sendMessage(
-          widget.vm.chatRoom.roomId, text, "TALK", widget.vm.chatRoom.type);
+      print("메시지 전송 => 방번호: ${widget.roomId}");
+      StompObject.sendMessage(widget.roomId, text, "TALK", widget.roomType);
       setState(() {
         _textController.text = "";
       });

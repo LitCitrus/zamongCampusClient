@@ -9,7 +9,10 @@ import 'package:zamongcampus/src/ui/views/post/post_detail/component/body.dart';
 class PostDetailScreen extends StatefulWidget {
   static const routeName = '/postDetail';
   final int postId;
-  const PostDetailScreen({Key? key, required this.postId}) : super(key: key);
+  final String likedCount;
+  const PostDetailScreen(
+      {Key? key, required this.postId, required this.likedCount})
+      : super(key: key);
 
   @override
   State<PostDetailScreen> createState() => _PostDetailScreenState();
@@ -20,8 +23,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void initState() {
     vm.loadPostDetail(widget.postId);
-
-    //print(widget.postId);
+    vm.changeLikedCount(widget.likedCount);
     super.initState();
   }
 
@@ -36,27 +38,23 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             onTap: () =>
                 FocusScope.of(context).unfocus(), //키보드 외부 영역 터치 시 키보드 내려감
             child: Scaffold(
-              appBar: PreferredSize(
-                preferredSize:
-                    Size.fromHeight(getProportionateScreenHeight(30)),
-                child: AppBar(
-                  leading: IconButton(
-                    icon: const Icon(Icons.chevron_left_outlined),
-                    color: Colors.black,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.more_horiz),
-                      color: Colors.black,
-                      onPressed: () {},
-                    ),
-                  ],
-                  elevation: 0.0,
-                  backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                leading: IconButton(
+                  icon: const Icon(Icons.chevron_left_outlined),
+                  color: Colors.black,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                 ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.more_horiz),
+                    color: Colors.black,
+                    onPressed: () {},
+                  ),
+                ],
+                elevation: 0.0,
+                backgroundColor: Colors.transparent,
               ),
               backgroundColor: Colors.white,
               //extendBodyBehindAppBar: true,

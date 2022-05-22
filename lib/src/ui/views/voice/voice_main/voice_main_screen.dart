@@ -41,7 +41,9 @@ class _VoiceMainScreenState extends State<VoiceMainScreen> {
                   centerTitle: false,
                   actions: [
                     IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushNamed(context, "/dummy");
+                        },
                         icon: const Icon(Icons.notifications_outlined))
                   ],
                   backgroundColor: mainColor,

@@ -9,6 +9,7 @@ import 'package:zamongcampus/src/business_logic/models/chatMessage.dart';
 import 'package:zamongcampus/src/business_logic/models/chatRoom.dart';
 import 'package:zamongcampus/src/business_logic/models/chatRoomMemberInfo.dart';
 import 'package:zamongcampus/src/business_logic/utils/constants.dart';
+import 'package:zamongcampus/src/business_logic/view_models/chat_detail_from_friendProfile_viewmodel.dart';
 import 'package:zamongcampus/src/business_logic/view_models/chat_detail_viewmodel.dart';
 import 'package:zamongcampus/src/business_logic/view_models/chat_viewmodel.dart';
 import 'package:zamongcampus/src/config/service_locator.dart';
@@ -31,8 +32,8 @@ class StompObject {
           print('stomp 연결 중 ...');
         },
         onWebSocketError: (dynamic error) => print(error.toString()),
-        stompConnectHeaders: {'Authorization': 'Bearer yourToken'},
-        webSocketConnectHeaders: {'Authorization': 'Bearer yourToken'},
+        stompConnectHeaders: AuthService.get_auth_header(),
+        webSocketConnectHeaders: AuthService.get_auth_header(),
       ),
     );
     _stompClient.activate(); // 서버 실행
@@ -43,24 +44,33 @@ class StompObject {
   static dynamic _onConnect(StompFrame frame) async {
     print('stomp 연결 완료');
     if (AuthService.loginId != null && AuthService.token != null) {
+      /// 1. 채팅방 불러오고
+      /// 2. 이미 존재한 방들 구독
+      /// 3. 내 token에 해당되는 방 구독
+      /// 4. 밀린 메세지 불러와서 재세팅
+      /// 5. 다시 채팅방 불러오기
       ChatViewModel chatViewModel = serviceLocator<ChatViewModel>();
-      chatViewModel.chatRooms.forEach((ChatRoom) {
-        subscribeChatRoom(ChatRoom.roomId);
-      });
+      await chatViewModel.loadChatRooms();
+      for (ChatRoom chatRoom in chatViewModel.chatRooms) {
+        subscribeChatRoom(chatRoom.roomId);
+      }
       subscribeChatRoom(FirebaseObject.deviceFcmToken);
+      await chatViewModel.setChatRoomByNewMessages();
+      await chatViewModel.loadChatRooms();
     }
-    // 이미 있는 방들 stomp연결 initStompExistChatRoom();
-    // 새로운 메세지로 chatroom setting하기 setChatRoomByNewMessages();
-    // chatroom load하기.  loadChatRooms()
   }
 
   // roomId로 오는 메세지
   static void subscribeChatRoom(String? roomId) {
     ChatService _chatService = serviceLocator<ChatService>();
     ChatViewModel chatViewModel = serviceLocator<ChatViewModel>();
+
     ChatDetailViewModel chatDetailViewModel =
         serviceLocator<ChatDetailViewModel>();
+    ChatDetailFromFriendProfileViewModel chatDetailFromFriendProfileViewModel =
+        serviceLocator<ChatDetailFromFriendProfileViewModel>();
     stompClient.subscribe(
+      headers: AuthService.get_auth_header(),
       destination: '/sub/chat/room/$roomId',
       callback: (frame) {
         // ** 메시지 도착 시점
@@ -73,7 +83,7 @@ class StompObject {
               ChatMessage.fromJsonRoomId(res["messageDto"], res["roomId"]);
           // 1. 메세지 저장
           _chatService.insertMessage(chatMessage);
-          // 2. chatroom 내용 변경 => 이미 그 방 안이면 0, 아니면 1 추가
+          // 2. local db의 chatroom 내용 변경 => 이미 그 방 안이면 0, 아니면 1 추가
           _chatService.updateChatRoom(
               lastMsg: chatMessage.text,
               lastMsgCreatedAt: chatMessage.createdAt,
@@ -83,14 +93,18 @@ class StompObject {
 
           // 3. pref에 최근 메시지 시간 저장할 것
           PrefsObject.setTotalLastMsgCreatedAt(
-              chatMessage.createdAt.toString());
+              chatMessage.createdAt.toIso8601String());
 
           // UI: 현재 위치가 해당방이면 ui 수정(chatdetail)
           if (chatMessage.roomId == chatViewModel.insideRoomId) {
-            chatDetailViewModel.addChatMessage(chatMessage);
+            if (chatViewModel.fromFriendProfile) {
+              chatDetailFromFriendProfileViewModel.addChatMessage(chatMessage);
+            } else {
+              chatDetailViewModel.addChatMessage(chatMessage);
+            }
           }
           // ** UI(chatsScreen) 변경
-          int index = chatViewModel.getExistRoomIndex(chatMessage.roomId);
+          int index = chatViewModel.getExistRoomIndex(chatMessage.roomId!);
           ChatRoom chatRoom = chatViewModel.chatRooms[index];
           if (index == 0) {
             // 최상단 : 업데이트만 => lastmsg, unreadcount, lastMsgCreatedAt
@@ -126,8 +140,8 @@ class StompObject {
           ChatMessage chatMessage = ChatMessage(
               roomId: res["roomId"],
               loginId: "",
-              text: "${res["nickname"]}님이 입장하셨습니다.",
-              type: MessageType.enter,
+              text: res["body"],
+              type: MessageType.ENTER,
               createdAt: DateTime.parse(res["createdAt"]));
           _chatService.insertMessage(chatMessage);
 
@@ -140,20 +154,24 @@ class StompObject {
 
           /* 3. 현재 위치가 해당방이면 ui 수정(chatdetail) */
           if (chatMessage.roomId == chatViewModel.insideRoomId) {
-            chatDetailViewModel.addChatMessage(chatMessage);
+            if (chatViewModel.fromFriendProfile) {
+              chatDetailFromFriendProfileViewModel.addChatMessage(chatMessage);
+            } else {
+              chatDetailViewModel.addChatMessage(chatMessage);
+            }
           }
 
           /* 4. pref에 최근 메시지 시간 저장할 것 */
           PrefsObject.setTotalLastMsgCreatedAt(
-              chatMessage.createdAt.toString());
+              chatMessage.createdAt.toIso8601String());
         } else if (res["type"] == "exit") {
           /***** EXIT ******/
           /* 1. 메세지 저장 */
           ChatMessage chatMessage = ChatMessage(
               roomId: res["roomId"],
               loginId: "",
-              text: "${res["nickname"]}님이 퇴장하셨습니다.",
-              type: MessageType.exit,
+              text: res["body"],
+              type: MessageType.EXIT,
               createdAt: DateTime.parse(res["createdAt"]));
           _chatService.insertMessage(chatMessage);
 
@@ -165,12 +183,16 @@ class StompObject {
 
           /* 3. 현재 위치가 해당방이면 ui 수정(chatdetail) */
           if (chatMessage.roomId == chatViewModel.insideRoomId) {
-            chatDetailViewModel.addChatMessage(chatMessage);
+            if (chatViewModel.fromFriendProfile) {
+              chatDetailFromFriendProfileViewModel.addChatMessage(chatMessage);
+            } else {
+              chatDetailViewModel.addChatMessage(chatMessage);
+            }
           }
 
           /* 4. pref에 최근 메시지 시간 저장할 것 */
           PrefsObject.setTotalLastMsgCreatedAt(
-              chatMessage.createdAt.toString());
+              chatMessage.createdAt.toIso8601String());
         } else if (res["type"] == "update") {
           /***** UPDATE ******/
           /* 1. 멤버 수정 */
@@ -180,12 +202,13 @@ class StompObject {
           /* 2. UI 수정 */
           _changeMemberInfo(chatMemberInfo);
         } else {
+          /***** CREATE ******/
           /* 1. 채팅방정보 저장 및 구독 */
           ChatRoom chatRoom = ChatRoom(
               roomId: res["roomInfo"]["roomId"],
               title: res["roomInfo"]["title"],
               type: res["roomInfo"]["type"],
-              lastMessage: "새로운 매칭입니다!",
+              lastMessage: "대화를 시작해보세요!",
               lastMsgCreatedAt: DateTime(2021, 5, 5),
               imageUrl: res["roomInfo"]["imageUrl"],
               unreadCount: 0);
@@ -196,32 +219,37 @@ class StompObject {
           res["memberInfos"].forEach((memberInfo) {
             ChatMemberInfo chatMemberInfo = ChatMemberInfo.fromJson(memberInfo);
             ChatRoomMemberInfo chatRoomMemberInfo = ChatRoomMemberInfo(
-                roomId: memberInfo["roomId"], loginId: memberInfo["loginId"]);
+                roomId: chatRoom.roomId, loginId: memberInfo["loginId"]);
             _chatService.insertOrUpdateMemberInfoOne(chatMemberInfo);
             _chatService.insertChatRoomMemberInfoOne(chatRoomMemberInfo);
           });
 
           // /* 3. chatsScreen 수정 */
-          // ChatController.to.insertItem(chatRoom);
+          chatViewModel.insertItem(chatRoom);
         }
       },
     );
     print('구독성공: $roomId번 방 ');
   }
 
+  static void deactivateStomp() {
+    /// stomp 연결 제거하기 -> 로그아웃 시 활용
+    stompClient.deactivate();
+  }
+
   static void sendMessage(
       String roomId, String text, String type, String chatRoomType) {
     print("-----메세지 전송 => 내용: $text, 방번호: ${roomId}");
     stompClient.send(
-      destination: '/pub/chat/message',
-      body: json.encode({
-        'roomId': roomId,
-        'loginId': AuthService.loginId,
-        'text': text,
-        "type": type,
-        "chatRoomType": chatRoomType,
-      }),
-    );
+        destination: '/pub/chat/message',
+        body: json.encode({
+          'roomId': roomId,
+          'loginId': AuthService.loginId,
+          'text': text,
+          "type": type,
+          "chatRoomType": chatRoomType,
+        }),
+        headers: AuthService.get_auth_header());
   }
 
   static void _changeMemberInfo(ChatMemberInfo chatMemberInfo) async {
@@ -235,12 +263,18 @@ class StompObject {
     ChatViewModel chatViewModel = serviceLocator<ChatViewModel>();
     ChatDetailViewModel chatDetailViewModel =
         serviceLocator<ChatDetailViewModel>();
+    ChatDetailFromFriendProfileViewModel chatDetailFromFriendProfileViewModel =
+        serviceLocator<ChatDetailFromFriendProfileViewModel>();
     List<ChatRoom> chatRooms =
         await _chatService.getChatRoomsByMemberLoginId(chatMemberInfo.loginId);
 
     chatRooms.forEach((chatRoom) {
       if (chatRoom.roomId == chatViewModel.insideRoomId) {
-        chatDetailViewModel.changeMember(chatMemberInfo);
+        if (chatViewModel.fromFriendProfile) {
+          chatDetailFromFriendProfileViewModel.changeMember(chatMemberInfo);
+        } else {
+          chatDetailViewModel.changeMember(chatMemberInfo);
+        }
       }
       if (chatRoom.type == "single") {
         chatRoom.title = chatMemberInfo.nickname;

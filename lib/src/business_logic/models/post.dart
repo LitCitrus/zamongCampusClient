@@ -9,9 +9,9 @@ class Post {
   final String body;
   DateTime createdAt;
   int likedCount;
-  List<dynamic>? imageUrls;
+  List<dynamic> imageUrls;
   int viewCount;
-  int? commentCount;
+  int commentCount;
   List<dynamic>? comments;
   final List<Category>? categories; //포스트에 관심사 설정이 없을 수도 있음
   List<String>? userImageUrls;
@@ -27,8 +27,8 @@ class Post {
       required this.createdAt,
       required this.likedCount,
       required this.viewCount,
-      this.commentCount,
-      this.imageUrls,
+      required this.commentCount,
+      required this.imageUrls,
       this.comments});
 
   factory Post.fromJson(Map<String, dynamic> json) {
@@ -44,7 +44,9 @@ class Post {
         likedCount: json['likedCount'],
         viewCount: json['viewCount'],
         commentCount: json['commentCount'],
-        imageUrls: json['imageUrls']?.toList(),
-        comments: json['comments']?.toList());
+        imageUrls: json['imageUrls'].toList(),
+        comments: json['comments']
+            ?.map((comment) => Comment.fromJson(comment))
+            .toList());
   }
 }

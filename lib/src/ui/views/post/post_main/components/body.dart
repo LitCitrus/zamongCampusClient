@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:zamongcampus/src/business_logic/view_models/post_main_screen_viewmodel.dart';
 import 'package:zamongcampus/src/ui/common_widgets/center_sentence.dart';
 import 'package:zamongcampus/src/ui/common_widgets/isLoading.dart';
-import 'package:zamongcampus/src/ui/views/post/post_create/post_create_screen.dart';
 import 'package:zamongcampus/src/ui/views/post/post_main/components/post_tab_btns.dart';
 import 'post_list_tile.dart';
 
 //예전 버전
 class Body extends StatelessWidget {
-  PostMainScreenViewModel vm;
-  Body({Key? key, required this.vm}) : super(key: key);
+  final PostMainScreenViewModel vm;
+  const Body({Key? key, required this.vm}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +22,8 @@ class Body extends StatelessWidget {
               )),
           actions: [
             IconButton(
-              onPressed: () => {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const PostCreateScreen()))
+              onPressed: () {
+                Navigator.pushNamed(context, '/postCreate');
               },
               icon: const Icon(Icons.edit_outlined),
               color: Colors.black,
@@ -41,12 +39,10 @@ class Body extends StatelessWidget {
           pinned: false,
           floating: true,
         ),
-        //PostTabBtns2(vm: vm),
         SliverPersistentHeader(
           delegate: PostTabBtns(vm: vm),
           pinned: true,
         ),
-
         vm.busy
             ? SliverList(
                 // Use a delegate to build items as they're scrolled on screen.

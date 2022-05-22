@@ -8,79 +8,83 @@ import 'package:zamongcampus/src/ui/views/post/post_detail/component/gallery_pho
 import 'package:zamongcampus/src/ui/views/post/post_detail/component/post_image_item_thumbnail.dart';
 
 class PostBody extends StatelessWidget {
-  PostDetailScreenViewModel vm;
+  final PostDetailScreenViewModel vm;
 
-  PostBody({Key? key, required this.vm}) : super(key: key);
+  const PostBody({Key? key, required this.vm}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(vm.postDetail.body),
-        vm.postDetail.imageUrls == null ? Container() : _hasImage(context),
-        Row(
-          children: [
-            InkWell(
-              onTap: () {
-                vm.likePost(vm.postDetail.loginId, vm.postDetail.id);
-              },
-              child: vm.isliked
-                  ? Padding(
-                      padding: EdgeInsets.all(getProportionateScreenWidth(8)),
-                      child: Icon(
-                        Icons.favorite,
-                        size: getProportionateScreenWidth(22),
-                        color: mainColor,
+    return Padding(
+      padding:
+          EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(vm.postDetail.body),
+          vm.postDetail.imageUrls == null ? Container() : _hasImage(context),
+          Row(
+            children: [
+              InkWell(
+                onTap: () {
+                  vm.likePost(vm.postDetail.loginId, vm.postDetail.id);
+                },
+                child: vm.isliked
+                    ? Padding(
+                        padding: EdgeInsets.all(getProportionateScreenWidth(8)),
+                        child: Icon(
+                          Icons.favorite,
+                          size: getProportionateScreenWidth(22),
+                          color: mainColor,
+                        ),
+                      )
+                    : Padding(
+                        padding: EdgeInsets.all(getProportionateScreenWidth(8)),
+                        child: Icon(Icons.favorite_border,
+                            size: getProportionateScreenWidth(22)),
                       ),
-                    )
-                  : Padding(
-                      padding: EdgeInsets.all(getProportionateScreenWidth(8)),
-                      child: Icon(Icons.favorite_border,
-                          size: getProportionateScreenWidth(22)),
-                    ),
-            ),
-            SizedBox(
-              width: getProportionateScreenWidth(40),
-              child: Text(
-                vm.postDetail.likedCount,
-                style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
               ),
-            ),
-            InkWell(
-              onTap: () {},
-              child: Padding(
-                padding: EdgeInsets.all(getProportionateScreenWidth(8)),
-                child: Icon(
-                  Icons.chat_bubble_outline,
-                  size: getProportionateScreenWidth(22),
+              SizedBox(
+                width: getProportionateScreenWidth(40),
+                child: Text(
+                  vm.postDetail.likedCount,
+                  style: const TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.w600),
                 ),
               ),
-            ),
-            SizedBox(
-              width: getProportionateScreenWidth(40),
-              child: Text(
-                vm.postDetail.commentCount,
-                style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-              ),
-            ),
-            const Spacer(),
-            InkWell(
-              onTap: () {},
-              child: Padding(
-                padding: EdgeInsets.all(getProportionateScreenWidth(8)),
-                child: Icon(
-                  Icons.bookmark_outline,
-                  size: getProportionateScreenWidth(25),
+              InkWell(
+                onTap: () {},
+                child: Padding(
+                  padding: EdgeInsets.all(getProportionateScreenWidth(8)),
+                  child: Icon(
+                    Icons.chat_bubble_outline,
+                    size: getProportionateScreenWidth(22),
+                  ),
                 ),
               ),
-            ),
-          ],
-        )
-      ],
+              SizedBox(
+                width: getProportionateScreenWidth(40),
+                child: Text(
+                  vm.postDetail.commentCount,
+                  style: const TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.w600),
+                ),
+              ),
+              const Spacer(),
+              InkWell(
+                onTap: () {},
+                child: Padding(
+                  padding: EdgeInsets.all(getProportionateScreenWidth(8)),
+                  child: Icon(
+                    Icons.bookmark_outline,
+                    size: getProportionateScreenWidth(25),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 

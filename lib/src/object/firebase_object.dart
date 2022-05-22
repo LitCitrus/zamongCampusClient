@@ -16,8 +16,6 @@ class FirebaseObject {
     try {
       String? token = await _messaging.getToken();
       // TODO: 여기에 vapidKey 필요. => 없어도 token를 가져오긴함.
-      // HomeController.to.changeDeviceToken(token);
-      // 과연? => 그냥 devicetoken이라고 pref에 따로 두는게 낫지 않을까?
       print(token);
       print("토큰 값 위치!");
       return token;

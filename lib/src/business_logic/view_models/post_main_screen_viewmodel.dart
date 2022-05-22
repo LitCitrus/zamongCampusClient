@@ -38,8 +38,8 @@ class PostMainScreenViewModel extends BaseModel {
           createdAt: dateToPastTime(post.createdAt),
           likedCount: post.likedCount.toString(),
           viewCount: post.viewCount.toString(),
-          commentCount: post.commentCount?.toString() ?? "0",
-          imageUrl: post.imageUrls!.isEmpty ? null : post.imageUrls?.first,
+          commentCount: post.commentCount.toString(),
+          imageUrl: post.imageUrls.isEmpty ? null : post.imageUrls.first,
         )));
     _nextPageToken++;
 

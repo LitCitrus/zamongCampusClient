@@ -2,19 +2,24 @@ class Comment {
   final int id;
   final String loginId;
   final String userNickname;
-  List<String>? userImageUrls;
   final String body;
-  DateTime createdAt;
-  List<Comment>? nestedComments;
+  bool deleted;
+  final int parentId;
+  List<dynamic> children;
+
+  List<String>? userImageUrls;
+  DateTime? createdAt;
 
   Comment({
     required this.id,
     required this.loginId,
     required this.userNickname,
-    this.userImageUrls,
     required this.body,
-    required this.createdAt,
-    this.nestedComments,
+    required this.deleted,
+    required this.parentId,
+    required this.children,
+    this.userImageUrls,
+    this.createdAt,
   });
 
   factory Comment.fromJson(Map<String, dynamic> json) {
@@ -22,9 +27,13 @@ class Comment {
         id: json['id'],
         loginId: json['loginId'],
         userNickname: json['userNickname'],
-        userImageUrls: json['userImageUrls']?.toList(),
         body: json['body'],
-        createdAt: DateTime.parse(json['createdAt']),
-        nestedComments: json['nestedComments']?.toList());
+        deleted: json['deleted'],
+        parentId: json['parentId'],
+        children:
+            json['children'].map((json) => Comment.fromJson(json)).toList(),
+        userImageUrls: json['userImageUrls']?.toList(),
+        // createdAt: DateTime.parse(json['createdAt']),
+        createdAt: DateTime(2021, 05, 05));
   }
 }

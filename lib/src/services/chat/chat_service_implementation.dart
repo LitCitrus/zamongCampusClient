@@ -14,9 +14,6 @@ import 'package:zamongcampus/src/services/chat/sqflite/chatMessage_db_helper.dar
 import 'package:zamongcampus/src/services/chat/sqflite/chatRoom_db_helper.dart';
 import 'package:zamongcampus/src/services/chat/sqflite/chatRoom_memberInfo_db_helper.dart';
 
-/// 2가지
-/// remote
-/// local
 class ChatServiceImpl implements ChatService {
   ChatMessageDBHelper chatMessageDBHelper = ChatMessageDBHelper();
   ChatRoomDBHelper chatRoomDBHelper = ChatRoomDBHelper();
@@ -25,28 +22,16 @@ class ChatServiceImpl implements ChatService {
   ChatMemberInfoDBHelper chatMemberInfoDBHelper = ChatMemberInfoDBHelper();
 
   @override
-  Future<dynamic> fetchUnReceivedMessages() async {
-    String totalLastMsgCreatedAt =
-        await PrefsObject.getTotalLastMsgCreatedAt() ??
-            DateTime(2021, 5, 5).toString();
-    String loginId = AuthService.loginId ?? "";
-    print("totalLastMsgCreatedAt 날짜; " + totalLastMsgCreatedAt);
-    print("loginId: " + loginId);
-    final response = await http.get(Uri(
-        path: devServer +
-            "/api/chat/message?loginId=" +
-            loginId +
-            "&totalLastMsgCreatedAt=" +
-            totalLastMsgCreatedAt));
-    if (response.statusCode == 200) {
-      dynamic newMessages = jsonDecode(utf8.decode(response.bodyBytes));
-      // 여기서 json으로 변경 해야해ㅐㅐㅐㅐㅐ!!
-      print("fetchChatRooms!");
-      return newMessages;
+  createOrGetChatRoom({required String otherLoginId}) async {
+    final jsonBody = jsonEncode({"otherLoginId": otherLoginId});
+    final response = await http.post(Uri.parse(devServer + "/api/chat/room"),
+        body: jsonBody, headers: AuthService.get_auth_header());
+    if (response.statusCode == 201) {
+      var res = await jsonDecode(utf8.decode(response.bodyBytes));
+      // ChatRoom, MemberInfo, ChatRoomMemberInfo 3가지 만들어서 보내자.
+      return res;
     } else {
-      print("fetchChatrooms 서버 잘못된 경우");
-      return {};
-      // throw Exception('Failed to load chatRooms');
+      throw Exception();
     }
   }
 
@@ -73,6 +58,31 @@ class ChatServiceImpl implements ChatService {
       return true;
     } else {
       return false;
+    }
+  }
+
+  @override
+  Future<dynamic> fetchUnReceivedMessages() async {
+    String totalLastMsgCreatedAt =
+        await PrefsObject.getTotalLastMsgCreatedAt() ??
+            DateTime(2021, 5, 5).toIso8601String();
+    String loginId = AuthService.loginId ?? "";
+    print("totalLastMsgCreatedAt 날짜; " + totalLastMsgCreatedAt);
+    print("loginId: " + loginId);
+    final response = await http.get(
+        Uri.parse(devServer +
+            "/api/chat/message?totalLastMsgCreatedAt=" +
+            totalLastMsgCreatedAt),
+        headers: AuthService.get_auth_header());
+    if (response.statusCode == 200) {
+      dynamic newMessages = jsonDecode(utf8.decode(response.bodyBytes));
+      // 여기서 json으로 변경 해야해ㅐㅐㅐㅐㅐ!!
+      print("fetchUnReceivedMessages!");
+      return newMessages;
+    } else {
+      print("fetchChatrooms 서버 잘못된 경우");
+      return {};
+      // throw Exception('Failed to load chatRooms');
     }
   }
 
@@ -226,5 +236,6 @@ class ChatServiceImpl implements ChatService {
   deleteAllMemberInfo() async {
     return await chatMemberInfoDBHelper.deleteAllMemberInfo();
   }
+
   // chatMemberInfoDB 끝
 }

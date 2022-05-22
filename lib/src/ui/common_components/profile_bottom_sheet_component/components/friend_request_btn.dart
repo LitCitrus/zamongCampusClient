@@ -6,8 +6,11 @@ import 'package:zamongcampus/src/ui/common_widgets/default_btn.dart';
 import 'package:zamongcampus/src/ui/common_widgets/default_shadow.dart';
 
 class FriendRequestBtn extends StatefulWidget {
-  ProfileViewModel vm;
-  FriendRequestBtn({Key? key, required this.vm}) : super(key: key);
+  // TODO: userprofile과 일반 profile를 케이스에따라 받기에 var 변수로 뒀다.
+  var vm;
+  String profileLoginId;
+  FriendRequestBtn({Key? key, required this.vm, required this.profileLoginId})
+      : super(key: key);
 
   @override
   _FriendRequestBtnState createState() => _FriendRequestBtnState();
@@ -26,7 +29,7 @@ class _FriendRequestBtnState extends State<FriendRequestBtn> {
         child: DefaultBtn(
           text: '친구 신청',
           press: () {
-            widget.vm.requestFriend('userId', widget.vm.profile.loginId);
+            widget.vm.requestFriend('userId', widget.profileLoginId);
           },
         ),
       ),

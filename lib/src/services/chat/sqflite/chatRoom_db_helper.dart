@@ -84,7 +84,7 @@ class ChatRoomDBHelper {
     // TODO: null이면 업데이트 안하도록 하는 로직 구현.
     List res = await db!.rawQuery(
         'UPDATE $tableName SET lastMessage = ?, lastMsgCreatedAt = ?, unreadCount = unreadCount + ? WHERE roomId = ?',
-        [lastMsg, lastMsgCreatedAt.toString(), unreadCount, roomId]);
+        [lastMsg, lastMsgCreatedAt.toString(), unreadCount ?? 0, roomId]);
   }
 
   Future<void> updateUnreadCount(int unreadCount, String roomId) async {

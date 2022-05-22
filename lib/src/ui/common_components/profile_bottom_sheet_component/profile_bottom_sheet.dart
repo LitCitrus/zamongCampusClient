@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:zamongcampus/src/business_logic/models/friend.dart';
 import 'package:zamongcampus/src/business_logic/view_models/profile_viewmodel.dart';
 import 'package:zamongcampus/src/config/service_locator.dart';
 import 'package:zamongcampus/src/config/size_config.dart';
@@ -12,8 +13,9 @@ import 'package:zamongcampus/src/ui/common_components/profile_bottom_sheet_compo
 import 'package:zamongcampus/src/ui/common_widgets/isLoading.dart';
 
 class ProfileBottomSheet extends StatefulWidget {
-  final String userId;
-  const ProfileBottomSheet({Key? key, required this.userId}) : super(key: key);
+  final int friendId;
+  const ProfileBottomSheet({Key? key, required this.friendId})
+      : super(key: key);
 
   @override
   State<ProfileBottomSheet> createState() => _ProfileBottomSheetState();
@@ -24,7 +26,7 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
 
   @override
   void initState() {
-    vm.loadProfile(widget.userId);
+    vm.loadProfile(widget.friendId);
 
     super.initState();
   }
@@ -51,7 +53,13 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                           : Column(
                               children: [
                                 const ProfileHeader(),
-                                ProfileInfo(userProfile: vm.profile),
+                                ProfileInfo(
+                                  imageUrl: vm.profile.imageUrl,
+                                  nickname: vm.profile.nickname,
+                                  majorName: vm.profile.majorName,
+                                  collegeName: vm.profile.collegeName,
+                                  introduction: vm.profile.introduction,
+                                ),
                                 Expanded(
                                   child: Stack(
                                       alignment: Alignment.bottomCenter,
@@ -85,11 +93,14 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
   Widget _bottomFixedBtn() {
     switch (vm.profile.friendRequestStatus) {
       case FriendRequestStatus.ACCEPTED:
-        return GoToChatRoomBtn();
+        return GoToChatRoomBtn(profileLoginId: vm.profile.loginId);
       case FriendRequestStatus.UNACCEPTED:
         return WaitingFriendRequest();
       default:
-        return FriendRequestBtn(vm: vm);
+        return FriendRequestBtn(
+          vm: vm,
+          profileLoginId: vm.profile.loginId,
+        );
     }
   }
 }

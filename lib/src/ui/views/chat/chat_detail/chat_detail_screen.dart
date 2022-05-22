@@ -10,7 +10,7 @@ import '../../../../business_logic/utils/constants.dart';
 import 'components/body.dart';
 
 class ChatDetailScreen extends StatefulWidget {
-  static const routeName = '/postDetail';
+  static const routeName = '/chatDetail';
   final ChatRoom chatRoom;
   final int index;
   const ChatDetailScreen(
@@ -26,15 +26,16 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    vm.scrollInit();
-    vm.setChatRoomAndIndex(widget.chatRoom, widget.index);
-    vm.getChatMessagesAndMember(widget.chatRoom.roomId);
-    vm.changeUnreadCount(widget.chatRoom.roomId);
-    ChatViewModel chatvm = serviceLocator<ChatViewModel>();
-    chatvm.changeInsideRoomId(widget.chatRoom.roomId);
-    // 여기서 argument 잡아서 msg load랑 뭐시기 다 해야함.
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      vm.chatDetailInit(widget.chatRoom);
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    vm.resetData();
+    super.dispose();
   }
 
   @override

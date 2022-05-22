@@ -20,7 +20,7 @@ class ChatMessageDBHelper {
           chatMessage.roomId,
           chatMessage.loginId,
           chatMessage.text,
-          chatMessage.type,
+          chatMessage.type.name,
           chatMessage.createdAt.toString(),
         ]);
     return res;
@@ -35,14 +35,14 @@ class ChatMessageDBHelper {
         [roomId, page * 20, 20]);
     List<ChatMessage> messages = [];
     for (var json in res) {
-      ChatMessage chat = ChatMessage(
+      ChatMessage chatMessage = ChatMessage(
           roomId: roomId,
           loginId: json["loginId"],
           text: json["text"],
-          type: json["type"],
+          type: MessageType.values.byName(json['type']),
           createdAt:
               DateFormat("yyyy-MM-dd hh:mm:ss").parse(json["createdAt"]));
-      messages.add(chat);
+      messages.add(chatMessage);
     }
     return messages;
   }

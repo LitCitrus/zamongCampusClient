@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:zamongcampus/src/business_logic/arguments/post_detail_screen_args.dart';
 
@@ -17,7 +16,7 @@ class PostListTile extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, PostDetailScreen.routeName,
-            arguments: PostDetailScreenArgs(post.id));
+            arguments: PostDetailScreenArgs(post.id, post.likedCount));
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -26,11 +25,12 @@ class PostListTile extends StatelessWidget {
         ),
         shadowColor: Colors.grey.shade100,
         elevation: 4.0,
-        margin: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+        margin: EdgeInsets.symmetric(
+            vertical: getProportionateScreenHeight(5),
+            horizontal: getProportionateScreenWidth(20)),
         child: Padding(
-          padding: const EdgeInsets.all(15.0),
+          padding: EdgeInsets.all(getProportionateScreenHeight(15)),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
@@ -42,9 +42,11 @@ class PostListTile extends StatelessWidget {
                       ))
                 ],
               ),
-              const VerticalSpacing(of: 10),
-              post.imageUrl == null ? _noImg() : _hasImg(),
-              const VerticalSpacing(of: 10),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    vertical: getProportionateScreenHeight(10)),
+                child: (post.imageUrl == null) ? _noImg() : _hasImg(),
+              ),
               Row(
                 children: [
                   Text(
@@ -76,9 +78,10 @@ class PostListTile extends StatelessWidget {
       //crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: getProportionateScreenWidth(245),
+          width: getProportionateScreenWidth(230),
+          height: getProportionateScreenHeight(60),
           child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -86,76 +89,50 @@ class PostListTile extends StatelessWidget {
                   style: const TextStyle(
                       fontSize: 15, fontWeight: FontWeight.bold),
                 ),
-                const VerticalSpacing(
-                  of: 5,
-                ),
+                const VerticalSpacing(of: 5),
                 Text(
                   post.body,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style:
                       const TextStyle(fontSize: 13, color: Color(0xff818181)),
-
-                  // truncate(post.body, 53,
-                  //     omission: "...", position: TruncatePosition.end),
-                  // style:
-                  //     const TextStyle(fontSize: 13, color: Color(0xff818181)),
                 )
               ]),
         ),
-        const HorizontalSpacing(of: 5),
+        const Spacer(),
         ClipRRect(
           borderRadius: BorderRadius.circular(10),
-          child: post.imageUrl!.startsWith('https')
-              ? CachedNetworkImage(
-                  width: 60,
-                  height: 60,
-                  imageUrl: post.imageUrl!,
-                  imageBuilder: (context, imageProvider) => Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
-                )
-              : Image.asset(
-                  post.imageUrl!,
-                  width: 60,
-                  height: 60,
-                  fit: BoxFit.cover,
-                ),
+          child: Image.asset(
+            post.imageUrl!,
+            width: getProportionateScreenWidth(60),
+            height: getProportionateScreenHeight(60),
+            fit: BoxFit.cover,
+          ),
         )
       ],
     );
   }
 
   Widget _noImg() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          post.title,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-        ),
-        const VerticalSpacing(
-          of: 5,
-        ),
-        Text(
-          post.body,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontSize: 13, color: Color(0xff818181)),
-
-          // truncate(post.body, 68,
-          //     omission: "...", position: TruncatePosition.end),
-          // style: const TextStyle(fontSize: 13, color: Color(0xff818181)),
-        )
-      ],
+    return SizedBox(
+      height: getProportionateScreenHeight(60),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            post.title,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          ),
+          const VerticalSpacing(of: 5),
+          Text(
+            post.body,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 13, color: Color(0xff818181)),
+          )
+        ],
+      ),
     );
   }
 }

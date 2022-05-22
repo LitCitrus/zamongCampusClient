@@ -5,8 +5,8 @@ import 'package:zamongcampus/src/ui/views/Friend/components/request_list_tile.da
 
 class RequestListBody extends StatelessWidget {
   final FriendListViewModel vm;
-  final List<FriendPresentation> users;
-  const RequestListBody({Key? key, required this.vm, required this.users})
+  final List<FriendPresentation> friends;
+  const RequestListBody({Key? key, required this.vm, required this.friends})
       : super(key: key);
 
   @override
@@ -15,9 +15,9 @@ class RequestListBody extends StatelessWidget {
       padding: EdgeInsets.only(top: getProportionateScreenHeight(15)),
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount: users.length,
+          itemCount: friends.length,
           itemBuilder: (BuildContext context, int index) {
-            return RequestListTile(vm: vm, user: users[index]);
+            return RequestListTile(vm: vm, friend: friends[index]);
           }),
     );
   }

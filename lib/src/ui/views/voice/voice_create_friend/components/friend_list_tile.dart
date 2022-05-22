@@ -34,23 +34,24 @@ class _FriendListTileState extends State<FriendListTile> {
               radius: getProportionateScreenHeight(30),
               backgroundImage: AssetImage(widget.user.userImageUrl),
             ),
-            Positioned(
-              bottom: 1,
-              right: -1,
-              child: Container(
-                  width: getProportionateScreenWidth(15),
-                  height: getProportionateScreenHeight(15),
-                  decoration: BoxDecoration(
-                    color: widget.user.isOnline
-                        ? const Color(0xff00FFBA) //온라인 상태일 때 색
-                        : Colors.grey, //오프라인 상태일 떄 색
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                        color: Colors.white,
-                        width: 3.0,
-                        style: BorderStyle.solid),
-                  )),
-            )
+            /* isOnlined 추후 개발 */
+            // Positioned(
+            //   bottom: 1,
+            //   right: -1,
+            //   child: Container(
+            //       width: getProportionateScreenWidth(15),
+            //       height: getProportionateScreenHeight(15),
+            //       decoration: BoxDecoration(
+            //         color: widget.user.isOnline
+            //             ? const Color(0xff00FFBA) //온라인 상태일 때 색
+            //             : Colors.grey, //오프라인 상태일 떄 색
+            //         shape: BoxShape.circle,
+            //         border: Border.all(
+            //             color: Colors.white,
+            //             width: 3.0,
+            //             style: BorderStyle.solid),
+            //       )),
+            // )
           ],
         ),
         value: widget.user.isChecked,

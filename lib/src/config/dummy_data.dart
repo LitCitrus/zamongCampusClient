@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:zamongcampus/src/business_logic/models/chatMessage.dart';
 import 'package:zamongcampus/src/business_logic/models/comment.dart';
+import 'package:zamongcampus/src/business_logic/models/friend.dart';
 import 'package:zamongcampus/src/business_logic/models/interest.dart';
 import 'package:zamongcampus/src/business_logic/models/post.dart';
 import 'package:zamongcampus/src/business_logic/models/user.dart';
@@ -220,19 +221,19 @@ List<ChatMessage> chatMessageDummy = [
       roomId: "1",
       loginId: "zm1",
       text: "하이루~",
-      type: MessageType.talk,
+      type: MessageType.TALK,
       createdAt: DateTime(2022, 02, 15)),
   ChatMessage(
       roomId: "1",
       loginId: "zm2",
       text: "방가방가",
-      type: MessageType.talk,
+      type: MessageType.TALK,
       createdAt: DateTime(2022, 02, 16)),
   ChatMessage(
       roomId: "1",
       loginId: "zm3",
       text: "헬로우",
-      type: MessageType.talk,
+      type: MessageType.TALK,
       createdAt: DateTime(2022, 02, 17)),
 ];
 
@@ -294,6 +295,7 @@ List<Post> postDummy1 = [
     viewCount: 897,
     commentCount: 156,
     imageUrls: [],
+    comments: [],
   ),
   Post(
     id: 4,
@@ -309,6 +311,7 @@ List<Post> postDummy1 = [
     viewCount: 897,
     commentCount: 156,
     imageUrls: [],
+    comments: [],
   ),
   Post(
     id: 5,
@@ -324,6 +327,7 @@ List<Post> postDummy1 = [
     viewCount: 897,
     commentCount: 156,
     imageUrls: [],
+    comments: [],
   ),
   Post(
     id: 6,
@@ -339,6 +343,7 @@ List<Post> postDummy1 = [
     viewCount: 897,
     commentCount: 156,
     imageUrls: [],
+    comments: [],
   ),
 ];
 
@@ -352,13 +357,19 @@ List<Comment> commentDummy = [
         "assets/images/user/user4.jpg"
       ],
       body: "와 댓글 일빠다.이게 과연 줄이 넘어가면 어떻게 될까 제발 그냥 좀 됐으면 좋겠다 근데 얼마나 더 길게 써야할까?",
-      createdAt: DateTime(2022, 3, 28)),
+      createdAt: DateTime(2022, 3, 28),
+      deleted: false,
+      parentId: 0,
+      children: nestedCommentDummy),
   Comment(
       id: 2,
       loginId: "hithere",
       userNickname: "댓글러2",
       body: "두번째 댓글~",
-      createdAt: DateTime(2022, 3, 28)),
+      createdAt: DateTime(2022, 3, 28),
+      deleted: false,
+      parentId: 0,
+      children: []),
   Comment(
       id: 3,
       loginId: "lilly",
@@ -368,5 +379,45 @@ List<Comment> commentDummy = [
         "assets/images/user/user4.jpg"
       ],
       body: "세번째 메롱",
-      createdAt: DateTime(2022, 3, 28))
+      createdAt: DateTime(2022, 3, 28),
+      deleted: false,
+      parentId: 0,
+      children: [])
+];
+
+List<Comment> nestedCommentDummy = [
+  Comment(
+      id: 4,
+      loginId: "asd",
+      userNickname: "대댓글러1",
+      userImageUrls: [
+        "assets/images/user/user3.jpg",
+      ],
+      body: "와 대댓글 일빠다. 제발 됐으면 좋겠다",
+      createdAt: DateTime(2022, 3, 28),
+      deleted: false,
+      parentId: 1,
+      children: []),
+  Comment(
+      id: 5,
+      loginId: "ohoh",
+      userNickname: "대댓글러2",
+      body: "두번째 대댓글~",
+      createdAt: DateTime(2022, 3, 28),
+      deleted: false,
+      parentId: 1,
+      children: []),
+  Comment(
+      id: 6,
+      loginId: "li",
+      userNickname: "대댓글러3",
+      userImageUrls: [
+        "assets/images/user/user1.jpg",
+        "assets/images/user/user4.jpg"
+      ],
+      body: "세번째 메롱",
+      createdAt: DateTime(2022, 3, 28),
+      deleted: false,
+      parentId: 1,
+      children: [])
 ];

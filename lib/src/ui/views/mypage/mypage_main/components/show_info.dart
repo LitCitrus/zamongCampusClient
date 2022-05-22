@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zamongcampus/src/business_logic/init/auth_service.dart';
 import 'package:zamongcampus/src/business_logic/utils/constants.dart';
 import 'package:zamongcampus/src/business_logic/view_models/mypage_viewmodel.dart';
 import 'package:zamongcampus/src/config/size_config.dart';
@@ -35,7 +36,8 @@ class ShowInfo extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(bottom: getProportionateScreenHeight(3)),
             child: Text(
-              vm.myInfo.nickname,
+              // vm.myInfo.nickname,
+              AuthService.loginId ?? "닉넴오류",
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
             ),
           ),

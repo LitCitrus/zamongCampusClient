@@ -1,5 +1,6 @@
 class PostDetailScreenArgs {
   final int postId;
+  final String likedCount;
 
-  PostDetailScreenArgs(this.postId);
+  PostDetailScreenArgs(this.postId, this.likedCount);
 }

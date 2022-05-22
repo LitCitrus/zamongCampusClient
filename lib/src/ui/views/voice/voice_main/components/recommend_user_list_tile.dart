@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zamongcampus/src/business_logic/utils/methods.dart';
 import 'package:zamongcampus/src/business_logic/view_models/voice_main_screen_viewmodel.dart';
 import 'package:zamongcampus/src/config/size_config.dart';
-import 'package:zamongcampus/src/ui/common_components/profile_bottom_sheet_component/profile_bottom_sheet.dart';
+import 'package:zamongcampus/src/ui/common_components/user_profile_bottom_sheet_component/user_profile_bottom_sheet.dart';
 
 class RecommendUserListTile extends StatelessWidget {
   UserPresentation recommendUser;
@@ -14,7 +14,7 @@ class RecommendUserListTile extends StatelessWidget {
     return InkWell(
       onTap: () {
         showCustomModalBottomSheet(
-            context, ProfileBottomSheet(userId: recommendUser.loginId));
+            context, UserProfileBottomSheet(loginId: recommendUser.loginId));
       },
       child: Container(
         width: getProportionateScreenWidth(116),
@@ -35,7 +35,7 @@ class RecommendUserListTile extends StatelessWidget {
                 Stack(
                   children: [
                     CircleAvatar(
-                      radius: getProportionateScreenHeight(30),
+                      radius: getProportionateScreenHeight(25),
                       backgroundImage:
                           AssetImage(recommendUser.userImageUrls.first),
                     ),

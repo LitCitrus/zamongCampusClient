@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:zamongcampus/src/business_logic/models/friend.dart';
 import 'package:zamongcampus/src/business_logic/models/user.dart';
 import 'package:zamongcampus/src/business_logic/models/voice_room.dart';
 import 'package:zamongcampus/src/business_logic/utils/category_data.dart';
@@ -49,7 +50,6 @@ class VoiceCreateViewModel extends BaseModel {
             userImageUrl: recentTalkUser.imageUrls?.first ??
                 "assets/images/user/general_user.png",
             userNickname: recentTalkUser.nickname,
-            isOnline: recentTalkUser.isOnline ?? false,
             isChecked: false)));
 
     setBusy(false);
@@ -58,14 +58,14 @@ class VoiceCreateViewModel extends BaseModel {
 //친구 로드 함수
   void loadFriendUsers() async {
     setBusy(true);
-    List<User> friendUserResult = await _friendService.fetchFriendUsers();
+    List<Friend> friendUserResult =
+        await _friendService.fetchAcceptedTypeFriends();
 
     _friendUsers.addAll(friendUserResult.map((friendUser) => UserPresentation(
         loginId: friendUser.loginId,
-        userImageUrl: friendUser.imageUrls?.first ??
-            "assets/images/user/general_user.png",
+        userImageUrl:
+            friendUser.imageUrl ?? "assets/images/user/general_user.png",
         userNickname: friendUser.nickname,
-        isOnline: friendUser.isOnline ?? false,
         isChecked: false)));
     setBusy(false);
   }
@@ -154,14 +154,12 @@ class UserPresentation {
   final String loginId;
   final String userImageUrl;
   final String userNickname;
-  final bool isOnline;
   bool isChecked;
 
   UserPresentation(
       {required this.loginId,
       required this.userImageUrl,
       required this.userNickname,
-      required this.isOnline,
       required this.isChecked});
 }
 

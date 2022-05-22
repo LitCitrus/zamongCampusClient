@@ -15,10 +15,12 @@ class ChatViewModel extends BaseModel {
   ChatService chatService = serviceLocator<ChatService>();
   List<ChatRoom> _chatRooms = [];
   String _insideRoomId = "";
+  bool _fromFriendProfile = false;
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
 
   List<ChatRoom> get chatRooms => _chatRooms;
   String get insideRoomId => _insideRoomId;
+  bool get fromFriendProfile => _fromFriendProfile;
 
   Future<void> loadChatRooms() async {
     _chatRooms = await chatService.getAllChatRoom();
@@ -31,7 +33,7 @@ class ChatViewModel extends BaseModel {
     // 기반 5월5일 => 서버에서는 무조건 5월5일 이후 값이 오게 되기에 상관없다.
     DateTime totalLastMsgCreatedAt = DateTime(2021, 5, 5);
     /* 1. 멤버 및 채팅방 정보 저장(modifiedInfos) */
-    /* ENTER, EXIT, UPDATE, MATCH 다 저장. 따라서 없는 방도 저장하게 됨. + 구독까지 2-(1) 로직 참고 */
+    /* ENTER, EXIT, UPDATE, CREATE 다 저장. 따라서 없는 방도 저장하게 됨. + 구독까지 2-(1) 로직 참고 */
     if (chatBundle["modifiedInfos"].length != 0) {
       List<ChatMemberInfo> chatMemberInfos = List.empty(growable: true);
       List<ChatRoomMemberInfo> chatRoomMemberInfos = List.empty(growable: true);
@@ -68,7 +70,7 @@ class ChatViewModel extends BaseModel {
                 roomId: modifiedInfo["systemMessage"]["roomInfo"]["roomId"],
                 title: modifiedInfo["systemMessage"]["roomInfo"]["title"],
                 type: modifiedInfo["systemMessage"]["roomInfo"]["type"],
-                lastMessage: "",
+                lastMessage: "대화를 시작해보세요!",
                 lastMsgCreatedAt: DateTime(2021, 5, 5),
                 imageUrl: modifiedInfo["systemMessage"]["roomInfo"]["imageUrl"],
                 unreadCount: 0);
@@ -100,7 +102,7 @@ class ChatViewModel extends BaseModel {
             roomId: roomMessageBundle["roomId"],
             loginId: msg["loginId"],
             text: msg["text"],
-            type: msg["type"],
+            type: MessageType.values.byName(msg['type']),
             createdAt: DateTime.parse(msg["createdAt"]));
         chatService.insertMessage(chatMessage);
         print("메시지내용: " + msg["text"] + " => 저장합니다");
@@ -127,7 +129,8 @@ class ChatViewModel extends BaseModel {
 
     // 3. 마지막 totalLastMsgCreatedAt 변경 => 5월5일 기준과 동일하면 변경 x
     if (!totalLastMsgCreatedAt.isAtSameMomentAs(DateTime(2021, 5, 5))) {
-      PrefsObject.setTotalLastMsgCreatedAt(totalLastMsgCreatedAt.toString());
+      PrefsObject.setTotalLastMsgCreatedAt(
+          totalLastMsgCreatedAt.toIso8601String());
     }
     return true;
   }
@@ -176,12 +179,25 @@ class ChatViewModel extends BaseModel {
 
   void replaceItem(ChatRoom updatedChatRoom, int index) {
     /* insert 후 remove를 animate 없이 */
+    setBusy(true);
     print('replace Item');
     chatRooms[index] = updatedChatRoom;
     print('replace 완료');
+    setBusy(false);
   }
 
   void changeInsideRoomId(String value) {
     _insideRoomId = value;
+  }
+
+  void changeFromFriendProfile(bool value) {
+    _fromFriendProfile = value;
+  }
+
+  void changeUnreadCountToZero(String roomId) {
+    setBusy(true);
+    int index = getExistRoomIndex(roomId);
+    chatRooms[index].unreadCount = 0;
+    setBusy(false);
   }
 }

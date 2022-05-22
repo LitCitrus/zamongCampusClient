@@ -1,14 +1,14 @@
-enum MessageType { enter, talk, exit, update }
+enum MessageType { ENTER, TALK, EXIT, UPDATE }
 
 class ChatMessage {
-  String roomId;
+  String? roomId;
   String loginId;
   String text;
   MessageType type;
   DateTime createdAt;
 
   ChatMessage({
-    required this.roomId,
+    this.roomId,
     required this.loginId,
     required this.text,
     required this.type,
@@ -20,7 +20,7 @@ class ChatMessage {
         roomId: json['roomId'],
         loginId: json['loginId'],
         text: json['text'],
-        type: json['type'],
+        type: MessageType.values.byName(json['type']),
         createdAt: DateTime.parse(json["createdAt"]));
   }
 
@@ -29,7 +29,7 @@ class ChatMessage {
         roomId: roomId,
         loginId: json['loginId'],
         text: json['text'],
-        type: json['type'],
+        type: MessageType.values.byName(json['type']),
         createdAt: DateTime.parse(json["createdAt"]));
   }
 }

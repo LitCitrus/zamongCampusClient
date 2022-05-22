@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:zamongcampus/src/business_logic/models/chatRoom.dart';
 import 'package:zamongcampus/src/ui/common_widgets/vertical_spacing.dart';
@@ -29,22 +30,26 @@ class _ChatTileState extends State<ChatTile> {
   }
 
   Widget buildItem(BuildContext context) => Container(
-        padding: EdgeInsets.symmetric(horizontal: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12), color: Colors.white),
         child: ListTile(
             onTap: widget.onClicked,
             contentPadding: EdgeInsets.all(5),
             leading: CircleAvatar(
-                radius: 30,
-                // TODO: aws 이미지 403이면 일반 이미지 보여주도록 구현해야함.
-                // backgroundImage: widget.chatRoom.image.image ??
-                //     Image.asset(
-                //             "assets/images/background/hanriver_chicken.jpeg")
-                //         .image),
-                backgroundImage: Image.asset(
-                        "assets/images/background/hanriver_chicken.jpeg")
-                    .image),
+              radius: 30,
+              // TODO: aws 이미지 403이면 일반 이미지 보여주도록 구현해야함.
+              // backgroundImage: widget.chatRoom.image.image ??
+              //     Image.asset(
+              //             "assets/images/background/hanriver_chicken.jpeg")
+              //         .image),
+              backgroundImage: widget.chatRoom.imageUrl.startsWith('https')
+                  ? CachedNetworkImageProvider(widget.chatRoom.imageUrl)
+                      as ImageProvider
+                  : AssetImage(
+                      widget.chatRoom.imageUrl,
+                    ),
+            ),
             title: RichText(
               overflow: TextOverflow.ellipsis,
               maxLines: 3,

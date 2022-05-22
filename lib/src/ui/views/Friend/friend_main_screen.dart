@@ -19,9 +19,9 @@ class _FriendMainScreenState extends State<FriendMainScreen> {
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) {});
-    vm.loadFriendUsers();
-    vm.loadRequestUsers();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      vm.loadFriends();
+    });
 
     super.initState();
   }
@@ -87,8 +87,9 @@ class _FriendMainScreenState extends State<FriendMainScreen> {
                 ),
                 backgroundColor: Colors.white, //배경색
                 body: TabBarView(children: [
-                  FriendListBody(vm: vm, users: vm.friendUsers),
-                  RequestListBody(vm: vm, users: vm.requestUsers)
+                  FriendListBody(
+                      vm: vm, friends: vm.friendsIRequestAndAceepted),
+                  RequestListBody(vm: vm, friends: vm.friendsIReceived)
                 ]),
               ),
             ),

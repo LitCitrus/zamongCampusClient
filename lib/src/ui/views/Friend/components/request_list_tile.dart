@@ -7,8 +7,8 @@ import 'package:zamongcampus/src/ui/common_components/profile_bottom_sheet_compo
 
 class RequestListTile extends StatelessWidget {
   final FriendListViewModel vm;
-  final FriendPresentation user;
-  const RequestListTile({Key? key, required this.vm, required this.user})
+  final FriendPresentation friend;
+  const RequestListTile({Key? key, required this.vm, required this.friend})
       : super(key: key);
 
   @override
@@ -20,7 +20,7 @@ class RequestListTile extends StatelessWidget {
       child: InkWell(
         onTap: () {
           showCustomModalBottomSheet(
-              context, ProfileBottomSheet(userId: user.loginId));
+              context, ProfileBottomSheet(friendId: friend.id));
         },
         child: ListTile(
           contentPadding: const EdgeInsets.all(0),
@@ -28,29 +28,30 @@ class RequestListTile extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: getProportionateScreenHeight(30),
-                backgroundImage: AssetImage(user.userImageUrl),
+                backgroundImage: AssetImage(friend.userImageUrl),
               ),
-              Positioned(
-                bottom: 1,
-                right: -1,
-                child: Container(
-                    width: getProportionateScreenWidth(15),
-                    height: getProportionateScreenHeight(15),
-                    decoration: BoxDecoration(
-                      color: user.isOnline
-                          ? const Color(0xff00FFBA) //온라인 상태일 때 색
-                          : Colors.grey, //오프라인 상태일 떄 색
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                          color: Colors.white,
-                          width: 3.0,
-                          style: BorderStyle.solid),
-                    )),
-              )
+              /* isOnline 로직 구현 후  */
+              // Positioned(
+              //   bottom: 1,
+              //   right: -1,
+              //   child: Container(
+              //       width: getProportionateScreenWidth(15),
+              //       height: getProportionateScreenHeight(15),
+              //       decoration: BoxDecoration(
+              //         color: friend.isOnline
+              //             ? const Color(0xff00FFBA) //온라인 상태일 때 색
+              //             : Colors.grey, //오프라인 상태일 떄 색
+              //         shape: BoxShape.circle,
+              //         border: Border.all(
+              //             color: Colors.white,
+              //             width: 3.0,
+              //             style: BorderStyle.solid),
+              //       )),
+              // )
             ],
           ),
           title: Text(
-            user.userNickname,
+            friend.userNickname,
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
           trailing: Wrap(
@@ -58,7 +59,7 @@ class RequestListTile extends StatelessWidget {
             children: [
               TextButton(
                 onPressed: () {
-                  vm.acceptRequest(user);
+                  vm.acceptRequest(friend);
                 },
                 child: Text('수락'),
                 style: TextButton.styleFrom(
@@ -68,7 +69,7 @@ class RequestListTile extends StatelessWidget {
               ),
               TextButton(
                   onPressed: () {
-                    vm.rejectRequest(user);
+                    vm.rejectRequest(friend);
                   },
                   child: Text('삭제'),
                   style: TextButton.styleFrom(

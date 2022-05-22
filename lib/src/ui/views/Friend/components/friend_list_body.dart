@@ -5,8 +5,8 @@ import 'package:zamongcampus/src/ui/views/Friend/components/search_bar.dart';
 
 class FriendListBody extends StatelessWidget {
   final FriendListViewModel vm;
-  final List<FriendPresentation> users;
-  const FriendListBody({Key? key, required this.vm, required this.users})
+  final List<FriendPresentation> friends;
+  const FriendListBody({Key? key, required this.vm, required this.friends})
       : super(key: key);
 
   @override
@@ -14,12 +14,23 @@ class FriendListBody extends StatelessWidget {
     return Column(
       children: [
         const SearchBar(),
-        Expanded(
-            child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: users.length,
-                itemBuilder: (BuildContext context, int index) =>
-                    FriendListTile(vm: vm, user: users[index])))
+        vm.busy
+            ? Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.only(top: 10.0),
+                child: const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 4,
+                    )),
+              )
+            : Expanded(
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: friends.length,
+                    itemBuilder: (BuildContext context, int index) =>
+                        FriendListTile(vm: vm, friend: friends[index])))
       ],
     );
   }
