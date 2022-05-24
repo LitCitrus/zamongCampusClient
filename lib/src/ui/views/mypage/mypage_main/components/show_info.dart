@@ -23,7 +23,7 @@ class ShowInfo extends StatelessWidget {
                 CircleAvatar(
                   radius: getProportionateScreenHeight(50),
                   backgroundImage: AssetImage(
-                      vm.myInfo.imageUrls.first), //추후 누르면 전체화면으로 프사볼수있도록 변경하기
+                      vm.myInfo.imageUrl), //추후 누르면 전체화면으로 프사볼수있도록 변경하기
                 ),
                 Positioned(
                   bottom: 1,

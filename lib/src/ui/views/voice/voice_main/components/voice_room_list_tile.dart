@@ -58,7 +58,7 @@ class VoiceRoomListTile extends StatelessWidget {
               Row(
                 //대화방 참여자 나열
                 children: [
-                  ...voiceRoom.memberImageUrls.map((imageUrl) => Container(
+                  ...voiceRoom.membersImgUrl.map((imageUrl) => Container(
                         width: 25.0,
                         height: 25.0,
                         margin: const EdgeInsets.only(right: 3),

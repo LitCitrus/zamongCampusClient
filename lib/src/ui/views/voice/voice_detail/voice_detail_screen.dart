@@ -7,10 +7,9 @@ import 'package:zamongcampus/src/ui/common_widgets/isLoading.dart';
 import 'package:zamongcampus/src/ui/views/voice/voice_detail/components/body.dart';
 import 'package:zamongcampus/src/business_logic/utils/constants.dart';
 import 'package:zamongcampus/src/config/dummy_data.dart';
-
+import 'dart:async';
 import 'components/body.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:async';
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
@@ -28,6 +27,7 @@ class VoiceDetailScreen extends StatefulWidget {
 class _VoiceDetailScreenState extends State<VoiceDetailScreen> {
   VoiceDetailViewModel vm = serviceLocator<VoiceDetailViewModel>();
   late int? _remoteUid = null;
+  // int myuid = 7;
   bool _localUserJoined = false;
   late RtcEngine _engine;
 
@@ -63,6 +63,7 @@ class _VoiceDetailScreenState extends State<VoiceDetailScreen> {
         print("내가 join를 성공 => $uid joined");
         // 이때 uid를 넘긴다.
         setState(() {
+          //myuid = uid;
           _localUserJoined = true;
         });
       }, userJoined: (int uid, int elapsed) {
@@ -183,7 +184,7 @@ class _VoiceDetailScreenState extends State<VoiceDetailScreen> {
               ),
               backgroundColor: const Color(0xfff8f8f8),
 
-              //body: vm.busy ? const IsLoading() : Body(vm: vm),   //원래부분
+              body: vm.busy ? const IsLoading() : Body(vm: vm), //원래부분
             ),
           ),
         );

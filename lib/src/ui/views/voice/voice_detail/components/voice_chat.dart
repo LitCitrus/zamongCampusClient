@@ -13,14 +13,6 @@ class VoiceChat extends StatefulWidget {
 
 class _VoiceChatState extends State<VoiceChat> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      widget.vm.setHost();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Container(
       width: SizeConfig.screenWidth,

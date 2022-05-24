@@ -27,6 +27,7 @@ import 'package:zamongcampus/src/services/post/post_service_implementation.dart'
 import 'package:zamongcampus/src/services/user/user_service.dart';
 import 'package:zamongcampus/src/services/user/user_service_fake.dart';
 import 'package:zamongcampus/src/services/voice/voice_service.dart';
+import 'package:zamongcampus/src/services/voice/voice_service_implementation.dart';
 
 import '../business_logic/view_models/post_main_screen_viewmodel.dart';
 import '../services/chat/chat_service.dart';
@@ -59,6 +60,7 @@ void setupServiceLocator() {
   //     .registerLazySingleton<CommentService>(() => CommentServiceImpl());
   // serviceLocator
   //     .registerLazySingleton<FriendService>(() => FriendServiceImpl());
+  //serviceLocator.registerLazySingleton<VoiceService>(() => VoiceServiceImpl());
 
   /* view models */
   serviceLocator.registerFactory(() => LoginMainScreenViewModel());
@@ -67,7 +69,7 @@ void setupServiceLocator() {
       () => PostMainScreenViewModel());
   serviceLocator.registerFactory<PostCreateScreenViewModel>(
       () => PostCreateScreenViewModel());
-  serviceLocator.registerLazySingleton<VoiceMainScreenViewModel>(
+  serviceLocator.registerFactory<VoiceMainScreenViewModel>(
       () => VoiceMainScreenViewModel());
   serviceLocator.registerLazySingleton<ChatViewModel>(() => ChatViewModel());
   serviceLocator

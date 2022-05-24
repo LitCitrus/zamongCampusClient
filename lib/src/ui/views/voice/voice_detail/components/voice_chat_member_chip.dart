@@ -5,7 +5,7 @@ import 'package:zamongcampus/src/config/size_config.dart';
 
 class VoiceChatMemberChip extends StatefulWidget {
   VoiceDetailViewModel vm;
-  UserPresentation member;
+  MemberPresentation member;
   VoiceChatMemberChip({Key? key, required this.vm, required this.member})
       : super(key: key);
 

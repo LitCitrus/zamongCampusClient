@@ -14,32 +14,35 @@ class VoiceMainScreenViewModel extends BaseModel {
   final VoiceService _voiceService = serviceLocator<VoiceService>();
   final UserService _userService = serviceLocator<UserService>();
 
-  List<VoiceRoomPresentation> voiceRooms = [];
-  List<UserPresentation> recommendUsers = [];
-  int nextPageToken = 0;
+  final List<VoiceRoomPresentation> _voiceRooms = [];
+  final List<UserPresentation> _recommendUsers = [];
+  int _nextPageToken = 0;
+
+  List<VoiceRoomPresentation> get voiceRooms => _voiceRooms;
+  List<UserPresentation> get recommendUsers => _recommendUsers;
 
   void loadVoiceRooms() async {
     setBusy(true);
     await Future.delayed(const Duration(milliseconds: 500)); // 0.5초 딜레이
     List<VoiceRoom> voiceRoomsResult =
-        await _voiceService.fetchVoiceRooms(nextPageToken: nextPageToken);
-    voiceRooms.addAll(voiceRoomsResult.map((voiceRoom) => VoiceRoomPresentation(
-        id: voiceRoom.id,
-        title: voiceRoom.title,
-        memberImageUrls: voiceRoom.members
-            .map((member) =>
-                member.imageUrls?.first ??
-                "assets/images/user/general_user.png")
-            .toList(),
-        categories: voiceRoom.categories
-            .map((category) =>
-                CategoryData.iconOf(category.name) +
-                " " +
-                CategoryData.korNameOf(category.name))
-            .toList(),
-        createdAt: dateToPastTime(voiceRoom.createdAt))));
+        await _voiceService.fetchVoiceRooms(nextPageToken: _nextPageToken);
+    _voiceRooms.addAll(voiceRoomsResult.map((voiceRoom) =>
+        VoiceRoomPresentation(
+            id: voiceRoom.voiceRoomAndTokenInfo.id,
+            title: voiceRoom.voiceRoomAndTokenInfo.title,
+            membersImgUrl: voiceRoom.membersInfo
+                .map((member) =>
+                    member.imageUrl ?? "assets/images/user/general_user.png")
+                .toList(),
+            categories: voiceRoom.categories!
+                .map((category) =>
+                    CategoryData.iconOf(category.name) +
+                    " " +
+                    CategoryData.korNameOf(category.name))
+                .toList(),
+            createdAt: dateToPastTime(voiceRoom.createdAt))));
 
-    nextPageToken++;
+    _nextPageToken++;
     setBusy(false);
   }
 
@@ -47,17 +50,16 @@ class VoiceMainScreenViewModel extends BaseModel {
     setBusy(true);
     await Future.delayed(const Duration(milliseconds: 500)); // 0.5초 딜레이
     List<User> userResult =
-        await _userService.fetchRecommendUsers(nextPageToken: nextPageToken);
+        await _userService.fetchRecommendUsers(nextPageToken: _nextPageToken);
     recommendUsers.addAll(userResult.map((user) => UserPresentation(
         loginId: user.loginId,
-        userImageUrls:
-            user.imageUrls ?? ["assets/images/user/general_user.png"],
+        imageUrl: user.imageUrl ?? "assets/images/user/general_user.png",
         collegeName: CollegeData.korNameOf(
             describeEnum(user.collegeCode ?? College.college0000)),
         majorName: MajorData.korNameOf(
             describeEnum(user.majorCode ?? Major.major0000)),
         isOnline: user.isOnline ?? false)));
-    nextPageToken++;
+    _nextPageToken++;
     setBusy(false);
   }
 }
@@ -65,28 +67,28 @@ class VoiceMainScreenViewModel extends BaseModel {
 class VoiceRoomPresentation {
   final int id;
   final String title;
-  final List<String> memberImageUrls;
+  final List<dynamic> membersImgUrl;
   final List<dynamic> categories;
   String createdAt;
 
   VoiceRoomPresentation(
       {required this.id,
       required this.title,
-      required this.memberImageUrls,
+      required this.membersImgUrl,
       required this.categories,
       required this.createdAt});
 }
 
 class UserPresentation {
   String loginId;
-  List<String> userImageUrls;
+  String imageUrl;
   String collegeName;
   String majorName;
   bool isOnline;
 
   UserPresentation(
       {required this.loginId,
-      required this.userImageUrls,
+      required this.imageUrl,
       required this.collegeName,
       required this.majorName,
       required this.isOnline});

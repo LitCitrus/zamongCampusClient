@@ -37,7 +37,7 @@ class UserProfileViewModel extends BaseModel {
     _userProfile = UserProfilePresentation(
         loginId: recommendUser.loginId,
         nickname: recommendUser.nickname,
-        imageUrl: recommendUser.imageUrls?.first ?? defaultUserProfile.imageUrl,
+        imageUrl: recommendUser.imageUrl ?? defaultUserProfile.imageUrl,
         collegeName: CollegeData.korNameOf(
             describeEnum(recommendUser.collegeCode ?? College.college0000)),
         majorName: MajorData.korNameOf(

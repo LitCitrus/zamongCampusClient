@@ -15,7 +15,7 @@ class MypageViewModel extends BaseModel {
 
   static final MypagePresentation defaultInfo = MypagePresentation(
     nickname: '',
-    imageUrls: ['assets/images/user/general_user.png'],
+    imageUrl: 'assets/images/user/general_user.png',
     collegeName: '',
     interestCount: '',
     friendCount: '17',
@@ -36,7 +36,7 @@ class MypageViewModel extends BaseModel {
     User myInfoResult = fakeMyInfo;
     _myInfo = MypagePresentation(
         nickname: myInfoResult.nickname,
-        imageUrls: myInfoResult.imageUrls?.toList() ?? defaultInfo.imageUrls,
+        imageUrl: myInfoResult.imageUrl ?? defaultInfo.imageUrl,
         collegeName: CollegeData.korNameOf(
             describeEnum(myInfoResult.collegeCode ?? College.college0000)),
         majorName: MajorData.korNameOf(
@@ -116,8 +116,7 @@ class MypageViewModel extends BaseModel {
         : _myInfo.introduction = introduction!;
     (imageUrl == '')
         ? imageUrl = null
-        : _myInfo.imageUrls
-            .insert(0, imageUrl!); //사진은 일단 하나만 받아서 사진 리스트 젤 앞으로 넣어둠 ->추후 수정
+        : _myInfo.imageUrl; //사진은 일단 하나만 받아서 사진 리스트 젤 앞으로 넣어둠 ->추후 수정
 
     //서버에 값 넘길때는 인자들이 null이 아닌것만 넘기면 됨.
 
@@ -144,7 +143,7 @@ class MypageViewModel extends BaseModel {
 
 class MypagePresentation {
   String nickname;
-  List<String> imageUrls;
+  String imageUrl;
   final String collegeName;
   final String? majorName;
   String? introduction;
@@ -157,7 +156,7 @@ class MypagePresentation {
 
   MypagePresentation(
       {required this.nickname,
-      required this.imageUrls,
+      required this.imageUrl,
       required this.collegeName,
       this.majorName,
       this.introduction,
@@ -185,7 +184,7 @@ User fakeMyInfo = User(
     loginId: 'myLoginId',
     nickname: '다노박러브',
     collegeCode: College.college0001,
-    imageUrls: ["assets/images/user/user3.jpg", "assets/images/user/user2.jpg"],
+    imageUrl: "assets/images/user/user3.jpg",
     majorCode: Major.major0001,
     introduction: "자기개발, 꾸준함, 성실한 사람 좋아해요\n저랑 잘 맞는 친구 찾구싶어요!",
     isOnline: true,

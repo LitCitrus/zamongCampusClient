@@ -47,7 +47,7 @@ class VoiceCreateViewModel extends BaseModel {
     _recentTalkUsers.addAll(recentTalkUserResult.map((recentTalkUser) =>
         UserPresentation(
             loginId: recentTalkUser.loginId,
-            userImageUrl: recentTalkUser.imageUrls?.first ??
+            userImageUrl: recentTalkUser.imageUrl ??
                 "assets/images/user/general_user.png",
             userNickname: recentTalkUser.nickname,
             isChecked: false)));

@@ -30,7 +30,7 @@ class _EditImageState extends State<EditImage> {
           CircleAvatar(
               radius: getProportionateScreenHeight(50),
               backgroundImage: (_pickedImg == null)
-                  ? AssetImage(widget.vm.myInfo.imageUrls.first)
+                  ? AssetImage(widget.vm.myInfo.imageUrl)
                   : AssetImage(_pickedImg!.path)),
           Positioned(
               bottom: 1,

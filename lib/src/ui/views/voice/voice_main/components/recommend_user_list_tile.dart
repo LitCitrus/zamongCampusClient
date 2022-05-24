@@ -36,8 +36,7 @@ class RecommendUserListTile extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: getProportionateScreenHeight(25),
-                      backgroundImage:
-                          AssetImage(recommendUser.userImageUrls.first),
+                      backgroundImage: AssetImage(recommendUser.imageUrl),
                     ),
                     Positioned(
                       bottom: 1,
